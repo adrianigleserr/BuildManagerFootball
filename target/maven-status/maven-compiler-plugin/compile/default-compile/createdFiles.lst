@@ -1,0 +1,14 @@
+com\sdebria\app\controller\ApiController$RatingsRequest.class
+com\sdebria\app\SdEbriaApplication.class
+com\sdebria\app\controller\ApiController$MatchEventRequest.class
+com\sdebria\app\controller\ApiController$TacticRequest.class
+com\sdebria\app\DatabaseMigration.class
+com\sdebria\app\controller\ApiController$LoginRequest.class
+com\sdebria\app\controller\ApiController$FinishMatchRequest.class
+com\sdebria\app\controller\ApiController$PlayerStatRequest.class
+com\sdebria\app\controller\ApiController$MatchRequest.class
+com\sdebria\app\controller\ApiController.class
+com\sdebria\app\controller\ApiController$VoteRequest.class
+com\sdebria\app\controller\ApiController$PlayerRequest.class
+com\sdebria\app\controller\ApiController$RatingRequest.class
+com\sdebria\app\controller\ApiController$LineupRequest.class

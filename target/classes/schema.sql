@@ -1,0 +1,108 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS players (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  real_name TEXT NOT NULL,
+  nickname TEXT NOT NULL,
+  shirt_number INTEGER NOT NULL,
+  position TEXT NOT NULL DEFAULT 'MEDIOCENTRO',
+  active INTEGER NOT NULL DEFAULT 1,
+  photo_data TEXT,
+  photo_pos_x REAL NOT NULL DEFAULT 50,
+  photo_pos_y REAL NOT NULL DEFAULT 50,
+  photo_zoom REAL NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS matches (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_date TEXT NOT NULL,
+  match_time TEXT NOT NULL,
+  location TEXT NOT NULL,
+  opponent TEXT NOT NULL,
+  home_score INTEGER,
+  away_score INTEGER,
+  status TEXT NOT NULL DEFAULT 'SCHEDULED',
+  season TEXT NOT NULL DEFAULT '2026/27',
+  map_url TEXT,
+  lineup_payload TEXT NOT NULL DEFAULT '{}',
+  finished_at TEXT,
+  started_at TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS match_player_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  minutes INTEGER NOT NULL DEFAULT 0,
+  goals INTEGER NOT NULL DEFAULT 0,
+  assists INTEGER NOT NULL DEFAULT 0,
+  big_mistakes INTEGER NOT NULL DEFAULT 0,
+  yellow_cards INTEGER NOT NULL DEFAULT 0,
+  red_cards INTEGER NOT NULL DEFAULT 0,
+  fouls INTEGER NOT NULL DEFAULT 0,
+  goals_conceded INTEGER NOT NULL DEFAULT 0,
+  clean_sheet INTEGER NOT NULL DEFAULT 0,
+  saves INTEGER NOT NULL DEFAULT 0,
+  goalkeeper_stats INTEGER NOT NULL DEFAULT 1,
+  starter INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(match_id, player_id),
+  FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS awards (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  award_type TEXT NOT NULL,
+  UNIQUE(match_id, award_type),
+  FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tactics (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  payload TEXT NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE IF NOT EXISTS match_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_id INTEGER NOT NULL,
+  minute INTEGER NOT NULL DEFAULT 0,
+  event_type TEXT NOT NULL,
+  player_id INTEGER,
+  assist_player_id INTEGER,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE SET NULL,
+  FOREIGN KEY(assist_player_id) REFERENCES players(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS match_player_ratings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  rating REAL NOT NULL CHECK(rating >= 0 AND rating <= 10),
+  UNIQUE(match_id, player_id),
+  FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS match_votes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  match_id INTEGER NOT NULL,
+  voter_player_id INTEGER NOT NULL,
+  target_player_id INTEGER NOT NULL,
+  vote_type TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(match_id, voter_player_id, vote_type),
+  FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  FOREIGN KEY(voter_player_id) REFERENCES players(id) ON DELETE CASCADE,
+  FOREIGN KEY(target_player_id) REFERENCES players(id) ON DELETE CASCADE
+);
